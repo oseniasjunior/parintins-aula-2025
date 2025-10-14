@@ -108,10 +108,6 @@ class Sale(ModelBase):
         db_column='id_branch',
     )
     date = models.DateTimeField(null=False, auto_now_add=True)
-    products = models.ManyToManyField(
-        to='cruds.Product',
-        through='core.SaleItem'
-    )
     objects = managers.SaleManager()
 
     class Meta:
@@ -133,7 +129,15 @@ class SaleItem(ModelBase):
         db_column='id_product',
     )
     quantity = models.DecimalField(decimal_places=3, max_digits=16, null=False)
+    subtotal = models.DecimalField(decimal_places=2, max_digits=16, null=False, default=0)
+    sale_price = models.DecimalField(decimal_places=2, max_digits=16, null=False, default=0)
 
     class Meta:
         db_table = 'sale_item'
         managed = True
+
+    def set_product_sale_price(self):
+        self.sale_price = self.product.sale_price
+
+    def calculate_subtotal(self):
+        self.subtotal = self.quantity * self.product.sale_price
