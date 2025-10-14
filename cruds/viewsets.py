@@ -3,7 +3,7 @@ from pickle import FALSE
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from cruds import serializers, models, filters
+from cruds import serializers, models, filters, tasks
 
 
 class MaritalStatusViewSet(viewsets.ModelViewSet):
@@ -38,3 +38,13 @@ class SupplierGroupViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
+
+
+class StateViewSet(viewsets.ModelViewSet):
+    queryset = models.State.objects.all()
+    serializer_class = serializers.StateSerializer
+
+    def create(self, request, *args, **kwargs):
+        instance = super().create(request, *args, **kwargs)
+        tasks.create_state_file.apply_async([instance.data.get('id')], countdown=1)
+        return instance
