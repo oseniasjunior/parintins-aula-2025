@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+
+  worker_default:
+    image: "oseniasjunior/sale-api"
+    restart: always
+    command: ["sh","-c","python -u -m celery -A sales worker --loglevel=INFO -B -Q default"]
+
+
+networks:
+  default:
+    name: sales-backend

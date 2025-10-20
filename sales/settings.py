@@ -84,7 +84,7 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': '127.0.0.1',
+        'HOST': '192.168.1.67',
         'PORT': '5432',
         'NAME': 'sales',
         'USER': 'postgres',
@@ -176,7 +176,8 @@ REST_FRAMEWORK = {
     )
 }
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6378/0'
+# CELERY_BROKER_URL = 'redis://127.0.0.1:6378/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_ENABLE_UTC = True
 CELERY_TASK_SERIALIZER = 'json'
