@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import F, Case, When, Value, ExpressionWrapper, Func, OuterRef, Subquery
+from django.db.models import F, Case, When, Value, ExpressionWrapper, Func, OuterRef, Subquery, Count
+from django.db.models.fields import FloatField
 from django.db.models.functions import Now
 
 from core.functions import Age
@@ -19,6 +20,13 @@ class CustomerQuerySet(models.QuerySet):
         )
         return queryset
 
+    def get_income_customers_25_percentage(self):
+        partial_income = ExpressionWrapper(F('income') * Value(0.25), output_field=FloatField())
+        queryset = self.annotate(
+            new_income=ExpressionWrapper(F('income') + partial_income, output_field=FloatField()),
+        )
+        return queryset.values('name', 'income', 'new_income')
+
     def gender_count(self, gender):
         return self.filter_by_gender(gender=gender).count()
 
@@ -37,6 +45,11 @@ class EmployeeQuerySet(models.QuerySet):
         return self.annotate(
             age=Age('birth_date'),
         ).order_by('-age')
+
+    def get_total_by_gender(self):
+        return self.values('gender').annotate(
+            total=Count('*'),
+        ).values('gender', 'total')
 
 
 class CustomerManager(models.Manager):
@@ -64,6 +77,9 @@ class CustomerManager(models.Manager):
             'marital_status__name', 'total'
         )
 
+    def get_income_customers_25_percentage(self):
+        return self.get_queryset().get_income_customers_25_percentage()
+
 
 class EmployeeManager(models.Manager):
     def get_queryset(self, using=None, hints=None):
@@ -77,6 +93,9 @@ class EmployeeManager(models.Manager):
 
     def count_by_marital_status(self):
         return self.get_queryset().count_by_marital_status()
+
+    def get_total_by_gender(self):
+        return self.get_queryset().get_total_by_gender()
 
 
 class SaleQuerySet(models.QuerySet):

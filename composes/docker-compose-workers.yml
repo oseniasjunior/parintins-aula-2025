@@ -6,6 +6,12 @@ services:
     restart: always
     command: ["sh","-c","python -u -m celery -A sales worker --loglevel=INFO -B -Q default"]
 
+  flower:
+    image: "oseniasjunior/sale-api"
+    restart: always
+    ports:
+      - "5555:5555"
+    command: [ "sh","-c","python -u -m celery -A sales flower" ]
 
 networks:
   default:
