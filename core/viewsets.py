@@ -11,7 +11,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.EmployeeSerializer
     ordering_fields = '__all__'
     ordering = ('-salary',)
-
+    
     @action(detail=True, methods=['PATCH'])
     def calc_bonus(self, request, *args, **kwargs):
         bonus_percentage = request.data.get('bonus_percentage', 0)

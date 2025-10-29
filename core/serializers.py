@@ -7,6 +7,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = models.Employee
         fields = '__all__'
 
+    def validate(self, data):
+        if not data.get('name', '').isupper():
+            raise Exception('O campo nome tem que ser em maiscuculo')
+        return data
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
